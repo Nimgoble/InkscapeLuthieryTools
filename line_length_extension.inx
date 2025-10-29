@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Line Length Extension</name>
+  <id>org.nim.line_length_extension</id>
+  <label appearance="header">Extension to set the length of a line segment</label>
+  <param name="tab" type="notebook">
+    <page name="line_length_page" gui-text="Line Length">
+     <param name="line_length" type="float" gui-text="Line Length">18.0</param>
+    </page>
+  </param>
+  <effect>
+    <effects-menu>
+      <submenu name="Line Length"/>
+    </effects-menu>
+  </effect>
+  <script>
+    <command location="inx" interpreter="python">line_length_extension.py</command>
+  </script>
+</inkscape-extension>
