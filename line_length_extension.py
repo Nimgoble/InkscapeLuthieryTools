@@ -57,11 +57,10 @@ class LineLengthExtension(inkex.EffectExtension):
     def effect(self):
         inkex.utils.debug(f"Selected nodes: {str(self.options.selected_nodes)}");
         selected_nodes = self.getSelectedElementsWithNodes();
-        #inkex.utils.debug(f"Selected nodes after processing: \n{json.dumps(selected_nodes)}");
         for selectedLineInfo in selected_nodes.values():
-            inkex.utils.debug(f"Selected node before processing: {json.dumps(selectedLineInfo.to_dict())}");
+            #inkex.utils.debug(f"Selected node before processing: {json.dumps(selectedLineInfo.to_dict())}");
             self.adjustLine(selectedLineInfo);
-            inkex.utils.debug(f"Selected node after processing: {json.dumps(selectedLineInfo.to_dict())}");
+            #inkex.utils.debug(f"Selected node after processing: {json.dumps(selectedLineInfo.to_dict())}");
         
     
     def adjustLine(self, lineInfo):
@@ -92,65 +91,6 @@ class LineLengthExtension(inkex.EffectExtension):
         lineInfo.parentElement.path = lineInfo.path;
         lineInfo.endNode = newB;
     
-    def oldMethod(self):
-        selection = self.svg.selection;
-        self.printObject(selection);
-        paths = self.svg.selection.filter(inkex.PathElement);
-        inkex.utils.debug("Number of selected paths: " + str(len(paths)));
-        inkex.utils.debug("Number of selected things: " + str(len(self.svg.selection)));
-        firstPathElement = paths[0];
-        # firstPath.style.set_color('green', 'stroke');
-        firstPath = firstPathElement.path;
-
-        # inkex.utils.debug(firstPath);
-        # for thing in firstPath:
-        #    inkex.utils.debug(thing);
-
-        # # slope = firstPathElement.end_point - firstPathElement.first_point;
-        # # inkex.utils.debug("slope: " + str(slope));
-        # controlPoints = list(firstPath.control_points);
-        # inkex.utils.debug(controlPoints);
-
-        controlPoints = list(firstPath.control_points);
-        a = controlPoints[0];
-        b = controlPoints[1];
-        
-        slope = inkex.transforms.Vector2d(b.x - a.x, b.y - a.y);
-        currentLineLengthString = str(self.options.line_length);
-        newLineLength = inkex.units.convert_unit(currentLineLengthString + "mm", "px");
-        newB = self.findEndPoint(a, slope, newLineLength);
-        inkex.utils.debug("line length in pixels: " + str(newLineLength));
-        inkex.utils.debug("line length in mm: " + currentLineLengthString);
-        inkex.utils.debug("slope: " + str(slope));
-        inkex.utils.debug("new end point: " + str(newB));
-        del firstPath[1];
-        firstPath.append(inkex.paths.lines.Line(newB.x, newB.y));
-        #firstPath.close();
-        firstPathElement.path = firstPath;
-
-    # def getSelectedElementsWithNodes(self):
-    #     selected_nodes = {};
-    #     for path in self.options.selected_nodes:
-    #         sel_data = path.rsplit(':', 2)
-    #         path_id = sel_data[0]
-    #         sub_path = int(sel_data[1])
-    #         sel_node = int(sel_data[2])
-    #         nodeParent = self.svg.selection[path_id];
-    #         parentProperty = nodeParent if sub_path == 0 else nodeParent.break_apart()[sub_path];
-    #         controlPoints = list(parentProperty.path.control_points);
-    #         actualNode = controlPoints[sel_node];
-    #         if path_id not in selected_nodes:
-    #             self.selected_nodes[path_id] = {
-    #                 "nodeParent": nodeParent,
-    #                 sub_paths: {sub_path: [actualNode]}
-    #             };
-    #         else:
-    #             if sub_path not in selected_nodes[path_id].sub_paths:
-    #                 selected_nodes[path_id].sub_paths[sub_path] = [actualNode]
-    #             else:
-    #                 selected_nodes[path_id].sub_paths[sub_path].extend([sel_node])
-    #     return selected_nodes;
-
     def getSelectedElementsWithNodes(self):
         selected_nodes = {};
         for path in self.options.selected_nodes:
