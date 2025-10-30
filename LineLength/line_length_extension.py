@@ -52,7 +52,6 @@ class LineLengthExtension(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--line_length", type=float, default=0.0);
-        pars.add_argument("--tab", type=str, default="stroke");
     
     def effect(self):
         inkex.utils.debug(f"Selected nodes: {str(self.options.selected_nodes)}");
