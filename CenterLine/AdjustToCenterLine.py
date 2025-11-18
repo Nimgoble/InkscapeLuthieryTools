@@ -27,7 +27,7 @@ import math
 
 
 """Align an object along the center line."""
-class CenterLineExtension(inkex.EffectExtension):
+class AdjustToCenterLineExtension(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self);
     
@@ -46,36 +46,44 @@ class CenterLineExtension(inkex.EffectExtension):
             return;
     
         self.printObject(centerLine);
-        centerLineBoundingBox = centerLine.bounding_box();
-
+        
         for selected in self.svg.selected.values():
             inkex.utils.debug(f"Selected object: {selected.get_id()}");
-            selectedBoundingBox = selected.bounding_box();
-            self.printObjectPosition(selected);
-            
-            if(self.options.center_line_type == "1"): #horizontal center line
-                # Align to center of center line bounding box
-                newY = centerLineBoundingBox.center_y + (centerLineBoundingBox.height - selectedBoundingBox.height) / 2;
-                transformY = selectedBoundingBox.center_y - newY;
-                selected.path.translate(0, transformY, True);
-                selected.set('y', str(newY));
-                inkex.utils.debug(f"Moved object '{selected.get_id()}' vertically by {transformY}.");
-            elif(self.options.center_line_type == "2"): #vertical center line
-                # Align to top of center line bounding box
-                newX = centerLineBoundingBox.center_x + (centerLineBoundingBox.width - selectedBoundingBox.width) / 2;
-                transformX = selectedBoundingBox.center_x - newX;
-                selected.path.translate(transformX, 0, True);
-                selected.set('x', str(newX));
-                inkex.utils.debug(f"Moved object '{selected.get_id()}' horizontally by {transformX}.");
-    
-            self.printObjectPosition(selected);
+            self.centerObjectOnCenterLine(selected, centerLine);
     
     
+    def centerObjectOnCenterLine(self, object, centerLine, overrideBoundingBox = None):
+        self.printObjectPositionAndSize(object);
+        if isinstance(object, inkex.Group):
+            for child in object.iterchildren():
+                self.centerObjectOnCenterLine(child, centerLine, overrideBoundingBox if overrideBoundingBox is not None else object.bounding_box());
+            self.printObjectPositionAndSize(object);
+            return;
+
+        selectedBoundingBox = overrideBoundingBox if overrideBoundingBox is not None else object.bounding_box();
+        centerLineBoundingBox = centerLine.bounding_box();
+        selectedPath = object.path;
+        inkex.utils.debug(f"Selected object center position: ({selectedBoundingBox.center_x}, {selectedBoundingBox.center_y})");
+        inkex.utils.debug(f"Center line center position: ({centerLineBoundingBox.center_x}, {centerLineBoundingBox.center_y})");
+        if(self.options.center_line_type == "1"): #horizontal center line
+            # Align to center Y of center line 
+            transformY = centerLineBoundingBox.center_y - selectedBoundingBox.center_y;
+            selectedPath.translate(0, transformY, True);
+            inkex.utils.debug(f"Moved object '{object.get_id()}' vertically by {transformY}.");
+        elif(self.options.center_line_type == "2"): #vertical center line
+            # Align to center X of center line
+            transformX = centerLineBoundingBox.center_x - selectedBoundingBox.center_x;
+            selectedPath.translate(transformX, 0, True);
+            inkex.utils.debug(f"Moved object '{object.get_id()}' horizontally by {transformX}.");
+        
+        object.path = selectedPath;
+        self.printObjectPositionAndSize(object);
     
-    def printObjectPosition(self, object):
+    
+    def printObjectPositionAndSize(self, object):
         try:
             boundingBox = object.bounding_box();
-            inkex.utils.debug(f"Object '{object.get_id()}' position and size: {boundingBox.center_x}, {boundingBox.center_y}, {boundingBox.width}, {boundingBox.height}");
+            inkex.utils.debug(f"Object '{object.get_id()}' position and size: ({boundingBox.center_x}, {boundingBox.center_y}), w: {boundingBox.width}, h: {boundingBox.height}");
         except Exception as e:
             inkex.utils.debug(f"Unable to get bounding box for object '{object.get_id()}': {e}");
 
@@ -92,4 +100,4 @@ class CenterLineExtension(inkex.EffectExtension):
             self.printObject(thing);
 
 if __name__ == '__main__':
-    CenterLineExtension().run()
+    AdjustToCenterLineExtension().run()

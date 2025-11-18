@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
 
-  <name>Center Line</name>
-  <id>org.nim.center_line_extension</id>
+  <name>Adjust to Center Line</name>
+  <id>org.nim.adjust_to_center_line_extension</id>
 
-  <label appearance="header">Things having to do with the center line</label>
+  <label appearance="header">Center the selected objects on the center line</label>
   <param name="center_line_name" type="string" gui-text="Name of center line"></param>
   <param name="center_line_type" type="optiongroup" appearance="combo" gui-text="Center line type">
     <option value="1">Horizontal</option>
@@ -13,10 +13,12 @@
   
   <effect>
     <effects-menu>
-      <submenu name="Luthiery Tools"/>
+      <submenu name="Luthiery Tools">
+        <submenu name="Center Line" />
+      </submenu>
     </effects-menu>
   </effect>
   <script>
-    <command location="inx" interpreter="python">centerline.py</command>
+    <command location="inx" interpreter="python">AdjustToCenterLine.py</command>
   </script>
 </inkscape-extension>
